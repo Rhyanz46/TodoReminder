@@ -39,22 +39,17 @@ class TaskListWidgetProvider : HomeWidgetProvider() {
                 Log.v("cobaaaa", "jumlah $counter");
 
                 // Pending intent to update counter on button click
-                // val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context,
-                //         Uri.parse("myAppWidget://updatecounter"))
+                val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context,
+                        Uri.parse("myWidget://updatecounter"))
 
-                // val taskpendingIntent = HomeWidgetLaunchIntent.getActivity(
-                //     context,
-                //     TaskActivity::class.java
-                // )
-
-                var flags = PendingIntent.FLAG_UPDATE_CURRENT
-                if (Build.VERSION.SDK_INT >= 23) {
-                    flags = flags or PendingIntent.FLAG_IMMUTABLE
-                }
+                // var flags = PendingIntent.FLAG_UPDATE_CURRENT
+                // if (Build.VERSION.SDK_INT >= 23) {
+                //     flags = flags or PendingIntent.FLAG_IMMUTABLE
+                // }
                 // val intent = Intent(context, TaskActivity::class.java)
-                val intent = Intent(context, TaskService::class.java)
-                val taskpendingIntent = PendingIntent.getService(context, 0, intent, flags)
-                setOnClickPendingIntent(R.id.bt_update, taskpendingIntent)
+                // val intent = Intent(context, TaskService::class.java)
+                // val taskpendingIntent = PendingIntent.getService(context, 0, intent, flags)
+                setOnClickPendingIntent(R.id.bt_update, backgroundIntent)
             }
             
             appWidgetManager.updateAppWidget(widgetId, views)

@@ -9,6 +9,7 @@ void main() {
 
 dynamic backgroundCallback(Uri? uri) async {
   print("masuk ke backgroundCallback");
+  print(uri?.host);
   if (uri?.host == 'updatecounter') {
     int _counter = 0;
     await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0)
