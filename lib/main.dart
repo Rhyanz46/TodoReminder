@@ -1,5 +1,35 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
+
+class LifecycleEventHandler extends WidgetsBindingObserver {
+  final AsyncCallback resumeCallBack;
+  final AsyncCallback suspendingCallBack;
+
+  LifecycleEventHandler({
+    required this.resumeCallBack,
+    required this.suspendingCallBack,
+  });
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (resumeCallBack != null) {
+          await resumeCallBack();
+        }
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        if (suspendingCallBack != null) {
+          await suspendingCallBack();
+        }
+        break;
+    }
+  }
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,16 +38,13 @@ void main() {
 }
 
 dynamic backgroundCallback(Uri? uri) async {
-  print("masuk ke backgroundCallback");
-  print(uri?.host);
+  developer.log("masuk ke backgroundCallback");
+  developer.log(uri.toString());
   if (uri?.host == 'updatecounter') {
-    int _counter = 0;
-    await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0)
-        .then((value) {
-      _counter = value!;
-      _counter++;
-    });
-    await HomeWidget.saveWidgetData<int>('_counter', _counter);
+    int? counter =
+        await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0);
+    counter = counter! + 1;
+    await HomeWidget.saveWidgetData<int>('_counter', counter);
     await HomeWidget.updateWidget(
         name: 'TaskListWidgetProvider', iOSName: 'TaskListWidgetProvider');
   }
@@ -72,11 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+        resumeCallBack: () async => loadData(),
+        suspendingCallBack: () async => loadData()));
     loadData(); // This will load data from widget every time app is opened
   }
 
   void loadData() async {
-    print("masuk ke loadData");
+    developer.log("masuk ke loadData");
     await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0)
         .then((value) {
       _counter = value!;
@@ -85,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> updateAppWidget() async {
-    print("mantap");
+    developer.log("mantap");
     await HomeWidget.saveWidgetData<int>('_counter', _counter);
     await HomeWidget.updateWidget(
         name: 'TaskListWidgetProvider', iOSName: 'TaskListWidgetProvider');
@@ -100,6 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+    developer.log("broooo");
     updateAppWidget();
   }
 

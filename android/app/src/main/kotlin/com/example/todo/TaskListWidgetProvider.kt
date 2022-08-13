@@ -11,11 +11,14 @@ import android.app.PendingIntent
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
-
 import android.os.Build
+
+import android.widget.ArrayAdapter
+import android.widget.ListView
 
 class TaskListWidgetProvider : HomeWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray, widgetData: SharedPreferences) {
+        val languages = listOf("Java", "Kotlin", "Javascript", "PHP", "Python")
         appWidgetIds.forEach { widgetId ->
             val views = RemoteViews(context.packageName, R.layout.task_list).apply {
 
@@ -41,14 +44,6 @@ class TaskListWidgetProvider : HomeWidgetProvider() {
                 // Pending intent to update counter on button click
                 val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context,
                         Uri.parse("myWidget://updatecounter"))
-
-                // var flags = PendingIntent.FLAG_UPDATE_CURRENT
-                // if (Build.VERSION.SDK_INT >= 23) {
-                //     flags = flags or PendingIntent.FLAG_IMMUTABLE
-                // }
-                // val intent = Intent(context, TaskActivity::class.java)
-                // val intent = Intent(context, TaskService::class.java)
-                // val taskpendingIntent = PendingIntent.getService(context, 0, intent, flags)
                 setOnClickPendingIntent(R.id.bt_update, backgroundIntent)
             }
             
